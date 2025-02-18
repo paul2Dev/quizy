@@ -17,7 +17,9 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-users';
+
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
@@ -47,12 +49,12 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('isAdmin')
                     ->label('Admin')
                     ->badge()
-                    ->color( fn (User $record) => $record->isAdmin ? 'success' : 'warning')
+                    ->color( fn (string $state): string => $state == 1 ? 'success' : 'warning')
                     ->formatStateUsing(function ($state) {
                         return $state ? 'Yes' : 'No';
                     }),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created')
+                    ->label('Created at')
                     ->dateTime(),
             ])
             ->filters([
