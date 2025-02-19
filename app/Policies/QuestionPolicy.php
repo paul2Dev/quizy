@@ -15,7 +15,7 @@ class QuestionPolicy
         return $user->isAdmin;
     }
 
-    public function view(User $user, User $model): bool
+    public function view(User $user): bool
     {
         return $user->isAdmin;
     }
@@ -25,22 +25,22 @@ class QuestionPolicy
         return $user->isAdmin;
     }
 
-    public function update(User $user, User $model): bool
+    public function update(User $user): bool
     {
         return $user->isAdmin;
     }
 
-    public function delete(User $user, User $model): bool
+    public function delete(User $user): bool
     {
         return $user->isAdmin;
     }
 
-    public function restore(User $user, User $model): bool
+    public function restore(User $user): bool
     {
         return $user->isAdmin;
     }
 
-    public function forceDelete(User $user, User $model): bool
+    public function forceDelete(User $user): bool
     {
         return $user->isAdmin;
     }
