@@ -86,6 +86,7 @@ class QuestionResource extends Resource
                             'multiple_choice' => 'Multiple Choice',
                             'text_input' => 'Text Input',
                         ])
+                        ->reactive()
                         ->required(),
                 ])
                 ->columns(2),
@@ -99,7 +100,17 @@ class QuestionResource extends Resource
                         Toggle::make('is_correct')->label('Correct Answer'),
                     ])
                     ->addActionLabel('Add Option')
-                ]),
+                    ->rules([
+                        fn ($get) => $get('question_type') === 'single_choice'
+                            ? ['distinct:strict', function ($attribute, $value, $fail) use ($get) {
+                                if (collect($get('options'))->where('is_correct', true)->count() > 1) {
+                                    $fail('Only one correct answer is allowed for Single Choice questions.');
+                                }
+                            }]
+                            : [],
+                    ])
+                ])
+                ->visible(fn ($get) => $get('question_type') !== 'text_input')
         ];
     }
 }

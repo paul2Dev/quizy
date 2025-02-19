@@ -35,6 +35,7 @@ class QuizResource extends Resource
                             'published' => 'Published',
                             'closed' => 'Closed',
                         ])
+                        ->default('draft')
                         ->required(),
                     Textarea::make('description')->columnSpan(2),
                 ])

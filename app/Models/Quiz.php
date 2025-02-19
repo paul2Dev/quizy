@@ -15,8 +15,8 @@ class Quiz extends Model
         return $this->belongsToMany(Question::class, 'quiz_question');
     }
 
-    public function assignedUsers()
+    public function users()
     {
-        return $this->belongsToMany(User::class, 'user_quizzes')->withPivot('status');
+        return $this->belongsToMany(User::class, 'quiz_user')->withTimestamps();
     }
 }

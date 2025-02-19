@@ -52,5 +52,10 @@ class User extends Authenticatable
     {
         return $this->id === 1;
     }
+
+    public function quizzes()
+    {
+        return $this->belongsToMany(Quiz::class, 'quiz_user')->withTimestamps();
+    }
     
 }
