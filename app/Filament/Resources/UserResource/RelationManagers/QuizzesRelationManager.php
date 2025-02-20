@@ -43,6 +43,7 @@ class QuizzesRelationManager extends RelationManager
                     ->recordSelectSearchColumns(['title', 'description'])
                     ->recordTitle(fn ($record) => $record->title)
                     ->multiple()
+                    ->label('Assign Quiz'),
             ])
             ->actions([
                 DetachAction::make(),
