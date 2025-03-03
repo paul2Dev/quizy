@@ -57,7 +57,7 @@ class QuizResource extends Resource
     {
         return $table->columns([
             TextColumn::make('title')
-                ->description(fn (Quiz $record): string => $record->description),
+                ->description(fn (Quiz $record): string => $record->description ?? ''),
             TextColumn::make('status')
                 ->badge()
                 ->color(
