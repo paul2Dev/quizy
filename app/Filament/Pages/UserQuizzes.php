@@ -50,20 +50,35 @@ class UserQuizzes extends Page implements HasTable
                     )
                     ->getStateUsing(function (Quiz $quiz) {
                         // Fetch the status from QuizAttempt based on the quiz and user
-                        $quizAttempt = QuizAttempt::where('quiz_id', $quiz->id)
-                            ->where('user_id', Auth::id())
-                            ->latest()
-                            ->first();
-
-                        return $quizAttempt ? Str::replace('_', ' ', $quizAttempt->status) : 'not started';
+                        return $this->getQuizAttemptStatus($quiz);
                     }),
                 TextColumn::make('created_at')->label('Assigned At')->dateTime(),
             ])->actions([
+                // Take Quiz Action - Shown when status is 'not started' or 'in progress'
                 Action::make('take_quiz')
                     ->label('Take Quiz')
                     ->icon('heroicon-o-play')
-                    ->url(fn (Model $record) => route('filament.dashboard.pages.take-quiz', ['quizId' => $record->id])) 
-                    ->hidden(fn (Model $record) => $record->status === 'completed'),
+                    ->url(fn (Model $record) => route('filament.dashboard.pages.take-quiz', ['quizId' => $record->id]))
+                    ->hidden(fn (Model $record) => $this->getQuizAttemptStatus($record) !== 'not started' && $this->getQuizAttemptStatus($record) !== 'in progress'),
+
+                // View Results Action - Shown when status is 'completed' or other status
+                Action::make('view_results')
+                    ->label('View Results')
+                    ->icon('heroicon-o-eye')
+                    ->url(fn (Model $record) => route('filament.dashboard.pages.view-quiz-results', ['quizId' => $record->id]))
+                    ->hidden(fn (Model $record) => $this->getQuizAttemptStatus($record) === 'not started' || $this->getQuizAttemptStatus($record) === 'in progress'),
             ]);
+    }
+
+    private function getQuizAttemptStatus(Model $quiz): string
+    {
+        // Fetch the status from QuizAttempt based on the quiz and user
+        $quizAttempt = QuizAttempt::where('quiz_id', $quiz->id)
+            ->where('user_id', Auth::id())
+            ->latest() // You can modify this to choose the relevant attempt (e.g., latest or completed)
+            ->first();
+
+        // Return status or 'Not Attempted' if no attempt exists
+        return $quizAttempt ? Str::replace('_', ' ', $quizAttempt->status) : 'not started';
     }
 }

@@ -25,11 +25,20 @@ class TakeQuiz extends Page
     public function mount(): void
     {
         $quizId = request()->query('quizId'); // Retrieve quizId from the URL
+
+        if(!auth()->user()->quizzes()->where('quiz_id', $quizId)->first()) {
+            abort(404);
+        }
+
         $this->quiz = Quiz::with('questions.options')->findOrFail($quizId);
         $this->attempt = QuizAttempt::firstOrCreate(
             ['user_id' => Auth::id(), 'quiz_id' => $quizId],
             ['status' => 'in_progress']
         );
+
+        if($this->attempt->status === 'completed') {
+            $this->redirect('/dashboard/user-quizzes');
+        }
         
         foreach($this->quiz->questions as $question) {
             if($question->question_type === 'multiple_choice') {
@@ -72,7 +81,7 @@ class TakeQuiz extends Page
     }
 
     // Action to handle submission
-    protected function getHeaderActions(): array
+    protected function getActions(): array
     {
         return [
             Action::make('submit')
@@ -109,6 +118,6 @@ class TakeQuiz extends Page
         $this->attempt->status = 'completed';
         $this->attempt->save();
 
-        $this->redirect('/dashboard'); // Redirect to dashboard after completion
+        $this->redirect('/dashboard/user-quizzes'); // Redirect to dashboard after completion
     }
 }
