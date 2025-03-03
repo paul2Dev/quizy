@@ -57,5 +57,10 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Quiz::class, 'quiz_user')->withTimestamps();
     }
+
+    public function quizAttempts()
+    {
+        return $this->hasMany(QuizAttempt::class, 'user_id');
+    }
     
 }

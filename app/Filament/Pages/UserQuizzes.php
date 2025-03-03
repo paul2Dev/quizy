@@ -13,6 +13,8 @@ use App\Models\Quiz;
 use Illuminate\Support\Facades\Auth;
 use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\QuizAttempt;
+use Illuminate\Support\Str;
 
 class UserQuizzes extends Page implements HasTable
 {
@@ -37,7 +39,24 @@ class UserQuizzes extends Page implements HasTable
             ))
             ->columns([
                 TextColumn::make('title')->sortable()->searchable(),
-                TextColumn::make('status')->badge(),
+                TextColumn::make('status')
+                    ->badge()
+                    ->color(
+                        fn (string $state) : string => match ($state) {
+                            'not started' => 'danger',
+                            'in progress' => 'warning',
+                            'completed' => 'success',
+                        }
+                    )
+                    ->getStateUsing(function (Quiz $quiz) {
+                        // Fetch the status from QuizAttempt based on the quiz and user
+                        $quizAttempt = QuizAttempt::where('quiz_id', $quiz->id)
+                            ->where('user_id', Auth::id())
+                            ->latest()
+                            ->first();
+
+                        return $quizAttempt ? Str::replace('_', ' ', $quizAttempt->status) : 'not started';
+                    }),
                 TextColumn::make('created_at')->label('Assigned At')->dateTime(),
             ])->actions([
                 Action::make('take_quiz')
