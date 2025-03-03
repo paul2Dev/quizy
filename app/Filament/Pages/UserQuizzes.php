@@ -11,6 +11,8 @@ use Filament\Tables\Table;
 use Filament\Tables\Concerns\InteractsWithTable;
 use App\Models\Quiz;
 use Illuminate\Support\Facades\Auth;
+use Filament\Tables\Actions\Action;
+use Illuminate\Database\Eloquent\Model;
 
 class UserQuizzes extends Page implements HasTable
 {
@@ -37,6 +39,12 @@ class UserQuizzes extends Page implements HasTable
                 TextColumn::make('title')->sortable()->searchable(),
                 TextColumn::make('status')->badge(),
                 TextColumn::make('created_at')->label('Assigned At')->dateTime(),
+            ])->actions([
+                Action::make('take_quiz')
+                    ->label('Take Quiz')
+                    ->icon('heroicon-o-play')
+                    ->url(fn (Model $record) => route('filament.dashboard.pages.take-quiz', ['quizId' => $record->id])) 
+                    ->hidden(fn (Model $record) => $record->status === 'completed'),
             ]);
     }
 }
