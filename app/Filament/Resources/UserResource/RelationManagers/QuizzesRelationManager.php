@@ -13,6 +13,7 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Tables\Actions\Action;
+use App\Models\QuizAttempt;
 
 
 class QuizzesRelationManager extends RelationManager
@@ -61,7 +62,27 @@ class QuizzesRelationManager extends RelationManager
                         ->icon('heroicon-o-eye')
                         ->url(fn (Model $record) => route('filament.dashboard.pages.view-quiz-results', ['quizId' => $record->id, 'userId' => $this->ownerRecord->id]))
                         ->hidden(fn (Model $record) => UserQuizzes::getQuizAttemptStatus($record, $this->ownerRecord->id) === 'not started' || UserQuizzes::getQuizAttemptStatus($record, $this->ownerRecord->id) === 'in progress'),
-                DetachAction::make(),
+                Action::make('reset_quiz')
+                    ->label('Reset Quiz')
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Reset Quiz Attempt')
+                    ->modalDescription('Are you sure you want to reset '.$this->ownerRecord->name.' attempt? This will erase '.$this->ownerRecord->name.' previous answers.')
+                    ->modalSubmitActionLabel('Yes, Reset')
+                    ->modalCancelActionLabel('No, Cancel')
+                    ->action(function (Model $record) {
+                        $attempt = QuizAttempt::where('quiz_id', $record->id)
+                            ->where('user_id', $this->ownerRecord->id)
+                            ->first();
+                
+                        if ($attempt) {
+                            $attempt->delete(); // Delete attempt so user can retake quiz
+                        }
+                    })
+                    ->hidden(fn (Model $record) => UserQuizzes::getQuizAttemptStatus($record, $this->ownerRecord->id) === 'not started' || UserQuizzes::getQuizAttemptStatus($record, $this->ownerRecord->id) === 'in progress'),
+                
+                DetachAction::make()->color('warning'),
             ]);
     }
 }
