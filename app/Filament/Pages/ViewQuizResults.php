@@ -22,9 +22,11 @@ class ViewQuizResults extends Page
 
     public function mount(): void
     {
+
+        $userID = request()->query('userId') ?? Auth::id(); 
         $quizId = request()->query('quizId'); // Retrieve quizId from URL
         $this->quiz = Quiz::with('questions.options')->findOrFail($quizId);
-        $this->attempt = QuizAttempt::where(['user_id' => Auth::id(), 'quiz_id' => $quizId])->first();
+        $this->attempt = QuizAttempt::where(['user_id' => $userID, 'quiz_id' => $quizId])->first();
 
         if (!$this->attempt) {
             abort(404);

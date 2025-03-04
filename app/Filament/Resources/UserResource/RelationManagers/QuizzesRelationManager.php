@@ -12,6 +12,8 @@ use Filament\Tables\Actions\AttachAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Tables\Actions\Action;
+
 
 class QuizzesRelationManager extends RelationManager
 {
@@ -54,6 +56,11 @@ class QuizzesRelationManager extends RelationManager
                     ->label('Assign Quiz'),
             ])
             ->actions([
+                Action::make('view_results')
+                        ->label('View Results')
+                        ->icon('heroicon-o-eye')
+                        ->url(fn (Model $record) => route('filament.dashboard.pages.view-quiz-results', ['quizId' => $record->id, 'userId' => $this->ownerRecord->id]))
+                        ->hidden(fn (Model $record) => UserQuizzes::getQuizAttemptStatus($record, $this->ownerRecord->id) === 'not started' || UserQuizzes::getQuizAttemptStatus($record, $this->ownerRecord->id) === 'in progress'),
                 DetachAction::make(),
             ]);
     }
