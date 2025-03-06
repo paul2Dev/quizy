@@ -34,6 +34,6 @@ class Totals extends BaseWidget
     
     public static function canView(): bool
     {
-        return Auth::user()?->id === 1 ?? false; // Ensure only admin sees the widget
+        return Auth::user()?->is_admin ?? false; // Ensure only admin sees the widget
     }
 }

@@ -18,6 +18,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Pages\TakeQuiz;
+use App\Http\Middleware\UpdateLastLogin;
 
 class DashboardPanelProvider extends PanelProvider
 {
@@ -53,6 +54,7 @@ class DashboardPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                UpdateLastLogin::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
