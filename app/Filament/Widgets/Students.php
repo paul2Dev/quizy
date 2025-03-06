@@ -10,6 +10,7 @@ use Filament\Tables\Columns\TextColumn;
 use Illuminate\Support\Facades\Auth;
 use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Students extends BaseWidget
 {
@@ -37,6 +38,11 @@ class Students extends BaseWidget
                     ->sortable()
                     ->badge()
                     ->color('indigo'),
+                TextColumn::make('quizzes_not_started')
+                    ->label('Not Started')
+                    ->sortable()
+                    ->badge()
+                    ->color('danger'),
                 TextColumn::make('quizzes_in_progress')
                     ->label('In Progress')
                     ->sortable()
@@ -47,12 +53,12 @@ class Students extends BaseWidget
                     ->sortable()
                     ->badge()
                     ->color('success'),
-                TextColumn::make('quizzes_not_started')
-                    ->label('Not Started')
+                TextColumn::make('last_login_at')
+                    ->label('Last Activity')
                     ->sortable()
                     ->badge()
-                    ->color('danger'),
-                TextColumn::make('last_login_at')->label('Last Login')->sortable()->dateTime(),
+                    ->color('grey')
+                    ->dateTime(),
             ])->actions([
                 Action::make('edit_user')
                     ->label('Edit User') // Label for the action button
